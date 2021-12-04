@@ -18,8 +18,8 @@ for filename in glob.glob(os.path.join(folder_path, '*.csv')):
     values = functions.normalize(file["Close"].values)
     size = len(values)
 
-    # splits data in blocks of 30 days going back up to SIZE - SIZE%30 days
-    months = functions.splitData(values, DAYS, size - (size%DAYS))
+    # splits data in blocks of days=DAYS
+    months = functions.splitData(functions.splitAllSequences(values, DAYS), DAYS)
 
     if flag == True:
         res = numpy.concatenate((res, months), axis=0)

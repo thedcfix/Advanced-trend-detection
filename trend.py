@@ -7,16 +7,17 @@ import stockpicking_functions as sp
 
 data = pandas.read_csv("data.csv")
 recreateModel = True
-n_cluster = 25
+n_cluster = 30
 
 with open('data.txt') as json_file:
     sequences = json.load(json_file)
     sequences = numpy.array(sequences)
 
+print("Number of sample sequences:", len(sequences))
 values = functions.normalize(data["close"].values)
 
 # splits data in blocks of 30 days going back up to 90 days. Returns an array of arrays
-months = functions.splitData(values, 30, 90)
+months = functions.splitDataMaxDays(values, 30, 90)
 
 if recreateModel:
     model = functions.createClusteringModel(n_cluster, 20, 400, "full")
@@ -31,7 +32,8 @@ else:
     model = pickle.load(infile)
     infile.close()
 
-prediction = functions.predict(model, months[2])
+# 0=first 30 days. 1=second 30 days, 2=last 90 days
+prediction = functions.predict(model, months[0])
 
 print(prediction)
 

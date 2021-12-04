@@ -1,11 +1,23 @@
 import numpy
+from numpy.core.arrayprint import format_float_scientific
 from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 from matplotlib.patches import ConnectionPatch
 import stockpicking_functions as sp
+import classes
+
+import time
 
 # split an array into chunks of size=split
-def splitData(data, split, max_days):
+def splitData(data, split):
+
+    data = numpy.array(data)
+    data = data.reshape(-1, split)
+
+    return data
+
+# split an array into chunks of size=split up to max_days
+def splitDataMaxDays(data, split, max_days):
 
     data = numpy.array(data)
     data = data[-max_days:]
@@ -13,6 +25,24 @@ def splitData(data, split, max_days):
     data = data.reshape(-1, split)
 
     return data
+
+def splitAllSequences(data, split):
+
+    queue = classes.Queue(split)
+    flag = False
+
+    for el in data:
+
+        queue.put(el)
+
+        if queue.isFull() and flag == True:
+            res = numpy.concatenate((res, queue.get()), axis=0)
+        elif queue.isFull() and flag == False:
+            res = queue.get()
+            flag = True
+    
+    return res
+
 
 # divide and array by its mean
 def normalize(array):
